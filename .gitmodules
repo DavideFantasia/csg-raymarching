@@ -1,0 +1,6 @@
+[submodule "external/etu-opengl"]
+	path = external/etu-opengl
+	url = https://github.com/bigmat18/etu-opengl.git
+[submodule "external/json-loader"]
+	path = external/json-loader
+	url = https://github.com/nlohmann/json.git
