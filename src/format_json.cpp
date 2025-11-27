@@ -1,4 +1,4 @@
-#include "json.hpp"
+#include "format_json.hpp"
 
 etugl::mat4f Primitive::json_to_mat4(const nh::json& json_matrix) {
     etugl::mat4f mat(1.0f);
