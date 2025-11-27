@@ -23,11 +23,11 @@ static const std::vector<etugl::u32> indices = {
     1, 2, 3  // second triangle
 }; 
 
-int main (int argc, char** argv) {
+int main(int argc, char** argv) {
     const fs::path path = fs::path(std::string(argv[argc-1])).parent_path();
     std::vector<PrimitiveInfo> primitives;
-    std::vector<int> nodes; 
-    std::vector<int> parent; 
+    std::vector<int> nodes;
+    std::vector<int> parent;
     std::vector<std::vector<int>> children;
 
     formatJsonFileToVectors(
@@ -55,9 +55,13 @@ int main (int argc, char** argv) {
     etugl::Program program(path/"vert.glsl", path/"frag.glsl"); 
 
     program.bind(); 
+    program.set_vec2f("u_Resolution",
+        etugl::vec2f((float)camera.width(), (float)camera.height())
+    );
 
     size_t num_primitives = primitives.size();
     LOG_INFO("Setting up {} primitives from JSON", num_primitives);
+
     for (int i = 0; i < num_primitives; ++i) {
         const PrimitiveInfo& primitive = primitives[i]; 
         const etugl::mat4f inverse_matrix = glm::inverse(primitive.matrix);
@@ -67,11 +71,7 @@ int main (int argc, char** argv) {
         program.set_vec4f(base_name + ".color",     primitive.color);
         program.set_mat4f(base_name + ".model",     primitive.matrix, true);
         program.set_mat4f(base_name + ".inv_model", inverse_matrix, true); 
-    } 
-
-    program.set_vec2f("u_Resolution", 
-        etugl::vec2f((float)camera.width(), (float)camera.height())
-    );
+    }
     
     // Renderer loop 
     while (!window.is_closed()) {

@@ -22,7 +22,10 @@ float distance_from_cylinder(vec3 p, vec3 center, float radius, float height) {
 // p: origin point
 // c: center of the shape
 // l: length parameter (radius for sphere, half-side for cube)
-// type: 0 for sphere, 1 for cube
+// type: 
+//  - 0: sphere
+//  - 1: cube
+//  - 2: cylinder
 float calculate_distance(vec3 p, vec3 c, float l, float h, float type) {
     if (type == 0.0)
         return distance_from_sphere(p, c, l);

@@ -1,7 +1,7 @@
 #ifndef UNIFORMS
 #define UNIFORMS
 
-#define LIGHT_POS   vec3(2.0, -5.0, 3.0)
+#define LIGHT_POS   vec3(0.0, 0.0, 0.0)
 #define LIGHT_COLOR vec3(1.0, 1.0, 1.0)
 
 #define NUM_PRIMITIVES 50 
