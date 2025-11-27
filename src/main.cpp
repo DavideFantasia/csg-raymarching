@@ -8,7 +8,7 @@
 #include <vector> 
 
 #include "glm/matrix.hpp"
-#include "json_import.hpp"
+#include "json.hpp"
 
 static const std::vector<float> vertices = {
     // positions         // texture coords
@@ -25,16 +25,13 @@ static const std::vector<etugl::u32> indices = {
 
 int main(int argc, char** argv) {
     const fs::path path = fs::path(std::string(argv[argc-1])).parent_path();
-    std::vector<PrimitiveInfo> primitives;
+    std::vector<Primitive> primitives;
     std::vector<int> nodes;
     std::vector<int> parent;
     std::vector<std::vector<int>> children;
 
-    formatJsonFileToVectors(
-        path/"scene_small.json",
-        primitives, nodes,
-        parent, children 
-    ); 
+    massert(format_json(path/"scene.json",primitives, nodes,parent, children),
+            "Error in json import"); 
 
     etugl::Window window = etugl::WinPerspective({
         .m_Width = 800, 
@@ -42,13 +39,13 @@ int main(int argc, char** argv) {
         .m_Title = "Hackmore", 
         .m_BGColor = 0x1E1E1EFF
     });
-    etugl::Camera& camera = window.camera(); 
+    etugl::Camera& camera = window.camera();
 
     etugl::VertexArray vao(
         vertices, indices, 
         etugl::VertexLayout() 
-            .add<etugl::LayoutType::Float3>(0) 
-            .add<etugl::LayoutType::Float2>(1) 
+            .add<etugl::LayoutType::Float3>(0)
+            .add<etugl::LayoutType::Float2>(1)
     ); 
  
     vao.bind(); 
@@ -59,11 +56,11 @@ int main(int argc, char** argv) {
         etugl::vec2f((float)camera.width(), (float)camera.height())
     );
 
-    size_t num_primitives = primitives.size();
+    size_t num_primitives = primitives.size(); 
     LOG_INFO("Setting up {} primitives from JSON", num_primitives);
 
-    for (int i = 0; i < num_primitives; ++i) {
-        const PrimitiveInfo& primitive = primitives[i]; 
+    for (int i = 0; i < num_primitives; ++i) { 
+        const Primitive& primitive = primitives[i]; 
         const etugl::mat4f inverse_matrix = glm::inverse(primitive.matrix);
 
         std::string base_name = "u_Primitives[" + std::to_string(i) + "]";
@@ -71,11 +68,11 @@ int main(int argc, char** argv) {
         program.set_vec4f(base_name + ".color",     primitive.color);
         program.set_mat4f(base_name + ".model",     primitive.matrix, true);
         program.set_mat4f(base_name + ".inv_model", inverse_matrix, true); 
-    }
+    } 
     
     // Renderer loop 
-    while (!window.is_closed()) {
-        glClear(GL_COLOR_BUFFER_BIT);  
+    while (!window.is_closed()) { 
+        glClear(GL_COLOR_BUFFER_BIT); 
         window.update(); 
 
         program.bind();

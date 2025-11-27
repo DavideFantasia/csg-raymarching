@@ -1,53 +1,39 @@
-#pragma once
+#include "json.hpp"
 
-#include <vector>
-#include <iostream>
-#include <fstream>
-#include <filesystem>
-#include <Types.hpp>
-#include <utils.hpp>
-#include <nlohmann/json.hpp>
-
-struct PrimitiveInfo {
-    etugl::mat4f matrix;
-    etugl::vec4f color;
-    int type;
-    int id_node;
-
-    static etugl::mat4f jsonArrayToMat4(const nlohmann::json& json_matrix) {
-        etugl::mat4f mat(1.0f);
-        if (json_matrix.is_array() && json_matrix.size() == 4) {
-            for (int i = 0; i < 4; ++i) {
-                if (json_matrix[i].is_array() && json_matrix[i].size() == 4) {
-                    for (int j = 0; j < 4; ++j) {
-                        mat[i][j] = json_matrix[i][j].get<float>();
-                    }
+etugl::mat4f Primitive::json_to_mat4(const nlohmann::json& json_matrix) {
+    etugl::mat4f mat(1.0f);
+    if (json_matrix.is_array() && json_matrix.size() == 4) {
+        for (int i = 0; i < 4; ++i) {
+            if (json_matrix[i].is_array() && json_matrix[i].size() == 4) {
+                for (int j = 0; j < 4; ++j) {
+                    mat[i][j] = json_matrix[i][j].get<float>();
                 }
             }
         }
-        return mat;
     }
+    return mat;
+}
 
-    static etugl::vec4f jsonArrayToVec4(const nlohmann::json& json_vector) {
-        if (json_vector.is_array() && json_vector.size() == 4) {
-            return etugl::vec4f(
-                json_vector[0].get<float>(),
-                json_vector[1].get<float>(),
-                json_vector[2].get<float>(),
-                json_vector[3].get<float>()
-            );
-        }
-        return etugl::vec4f(0.0f); 
+etugl::vec4f Primitive::json_to_vec4(const nlohmann::json& json_vector) {
+    if (json_vector.is_array() && json_vector.size() == 4) {
+        return etugl::vec4f(
+            json_vector[0].get<float>(),
+            json_vector[1].get<float>(),
+            json_vector[2].get<float>(),
+            json_vector[3].get<float>()
+        );
     }
-};
+    return etugl::vec4f(0.0f); 
+}
 
-static inline bool formatJsonFileToVectors(
-    const std::filesystem::path& file_path,
-    std::vector<PrimitiveInfo>& primitives,
-    std::vector<int>& nodes,
-    std::vector<int>& parents,
-    std::vector<std::vector<int>>& children
-) {
+
+
+bool format_json(const std::filesystem::path& file_path,
+                 std::vector<Primitive>& primitives,
+                 std::vector<int>& nodes,
+                 std::vector<int>& parents,
+                 std::vector<std::vector<int>>& children) 
+{
     const std::string file_path_str = file_path.string();
 
     primitives.clear();
@@ -72,9 +58,9 @@ static inline bool formatJsonFileToVectors(
 
     if (parsed_json.count("primitives") && parsed_json["primitives"].is_array()) {
         for (const auto& p_json : parsed_json["primitives"]) {
-            PrimitiveInfo p_info;
-            p_info.matrix = PrimitiveInfo::jsonArrayToMat4(p_json["matrix"]);
-            p_info.color = PrimitiveInfo::jsonArrayToVec4(p_json["color"]);
+            Primitive p_info;
+            p_info.matrix = Primitive::json_to_mat4(p_json["matrix"]);
+            p_info.color = Primitive::json_to_vec4(p_json["color"]);
             p_info.type = p_json["type"].get<int>();
             p_info.id_node = p_json["id_node"].get<int>();
             primitives.push_back(p_info);

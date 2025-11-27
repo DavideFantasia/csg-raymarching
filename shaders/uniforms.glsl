@@ -1,13 +1,10 @@
 #ifndef UNIFORMS
 #define UNIFORMS
 
-#define LIGHT_POS   vec3(0.0, 0.0, 0.0)
+#define LIGHT_POS   vec3(2.65, 0.0, 23.0)
 #define LIGHT_COLOR vec3(1.0, 1.0, 1.0)
 
 #define NUM_PRIMITIVES 50 
-#define MAX_STEPS 200
-#define MINIMUM_HIT_DISTANCE 0.001
-#define MAXIMUM_TRACE_DISTANCE 1000.0
 
 struct Primitives {
     float type; // 0: sphere, 1: cube, 2: cylinder
